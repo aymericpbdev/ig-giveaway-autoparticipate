@@ -50,7 +50,7 @@ The script also adds three commands to the userscript manager menu (**Participat
 
 1. Install a userscript manager: [Tampermonkey](https://tampermonkey.net/) (Chromium-based browsers) or [Violentmonkey](https://violentmonkey.github.io/) (Firefox).
 
-2. Open the [no-redirect-participate.user.js](https://github.com/aymericpbdev/ig-giveaway-autoparticipate/raw/main/no-redirect-participate.user.js) file. Your userscript manager will detect it and offer to install it.
+2. Open the [auto-participate.user.js](https://github.com/aymericpbdev/ig-giveaway-autoparticipate/raw/main/auto-participate.user.js) file. Your userscript manager will detect it and offer to install it.
 
 That's it. The script runs automatically when you open an Instant Gaming giveaway page.
 
