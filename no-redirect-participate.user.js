@@ -18,12 +18,43 @@
 
   console.log("[IG-Auto] Script charge, execution du corps principal");
 
+  function delay(durationMs) {
+    return new Promise((resolve) => setTimeout(resolve, durationMs));
+  }
+
+  function getRandomDelayBiasedShort(minMs, maxMs) {
+    // Math.random() est uniforme sur [0, 1[. L'elever au carre tasse les
+    // valeurs vers 0 : les delais courts deviennent majoritaires, les longs rares.
+    const biasedFraction = Math.random() ** 2;
+    return minMs + biasedFraction * (maxMs - minMs);
+  }
+
+  function getRandomDelayUniform(minMs, maxMs) {
+    return minMs + Math.random() * (maxMs - minMs);
+  }
+
+  function shuffleArray(sourceArray) {
+    // Melange de Fisher-Yates sur une copie (l'original n'est pas modifie).
+    const shuffled = [...sourceArray];
+    for (let currentIndex = shuffled.length - 1; currentIndex > 0; currentIndex--) {
+      const randomIndex = Math.floor(Math.random() * (currentIndex + 1));
+      [shuffled[currentIndex], shuffled[randomIndex]] =
+        [shuffled[randomIndex], shuffled[currentIndex]];
+    }
+    return shuffled;
+  }
+
   function openInNewTab(url) {
        window.open(url, '_blank');
   }
 
-  function participate(){
+  async function participate(){
     console.log("[IG-Auto] participate() appelee");
+
+    const beforeClickDelayMs = getRandomDelayUniform(1500, 5000);
+    console.log("[IG-Auto] attente avant clic participer :", Math.round(beforeClickDelayMs), "ms");
+    await delay(beforeClickDelayMs);
+
     // Get the participate button element.
     const participate = document.querySelector("button.button.validate");
     // Click on participate if it exists.
@@ -72,11 +103,20 @@
     }, maxWaitDurationMs);
   }
 
-  function socials(){
+  async function socials(){
     const socialRewardLinks = document.querySelectorAll("a.button.reward");
     console.log("[IG-Auto] socials() appelee, liens trouves :", socialRewardLinks.length);
-    // Click on each socials
-    socialRewardLinks.forEach((e) => e.click())
+
+    // Ordre de clic non deterministe.
+    const linksInRandomOrder = shuffleArray(Array.from(socialRewardLinks));
+
+    for (const socialLink of linksInRandomOrder) {
+      const betweenClicksDelayMs = getRandomDelayBiasedShort(300, 1700);
+      console.log("[IG-Auto] attente avant prochain clic social :", Math.round(betweenClicksDelayMs), "ms");
+      await delay(betweenClicksDelayMs);
+      socialLink.click();
+    }
+    console.log("[IG-Auto] tous les liens sociaux ont ete cliques");
   }
 
   function giveawayList(){
