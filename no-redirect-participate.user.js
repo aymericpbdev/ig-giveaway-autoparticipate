@@ -27,6 +27,12 @@
 
   console.log("[IG-Auto] Script loaded, running main body");
 
+  function isGiveawayPage() {
+    // True only on an Instant Gaming giveaway page (not on the GitHub list page).
+    return window.location.hostname === "www.instant-gaming.com"
+      && window.location.pathname.includes("/giveaway/");
+  }
+
   function delay(durationMs) {
     return new Promise((resolve) => setTimeout(resolve, durationMs));
   }
@@ -153,8 +159,10 @@
   // Register the menu command
   GM_registerMenuCommand("Participate", participate);
   GM_registerMenuCommand("Socials", socials);
-  GM_registerMenuCommand("Giveaway List", clickAllGiveawayLinks);
   GM_registerMenuCommand("Open ALL Links", openAllGiveawayLinksInTabs);
-  participate();
+
+  if (isGiveawayPage()) {
+    participate();
+  }
 
 })();
