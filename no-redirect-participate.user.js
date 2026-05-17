@@ -130,11 +130,6 @@
     console.log("[IG-Auto] all social links have been clicked");
   }
 
-  function clickAllGiveawayLinks(){
-    // Open giveaway links from the new README layout, with fallback to legacy selectors.
-    getGiveawayLinks().forEach((a) => a.click())
-  }
-
   function openAllGiveawayLinksInTabs(){
       getGiveawayLinks().forEach((a) => { openInNewTab(a.href); })
   }
