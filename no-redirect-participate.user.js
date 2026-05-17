@@ -16,15 +16,14 @@
 (function() {
   "use strict";
 
-  console.log("[IG-Auto] Script charge, execution du corps principal");
+  console.log("[IG-Auto] Script loaded, running main body");
 
   function delay(durationMs) {
     return new Promise((resolve) => setTimeout(resolve, durationMs));
   }
 
   function getRandomDelayBiasedShort(minMs, maxMs) {
-    // Math.random() est uniforme sur [0, 1[. L'elever au carre tasse les
-    // valeurs vers 0 : les delais courts deviennent majoritaires, les longs rares.
+    // Squaring biases the uniform [0, 1[ distribution toward 0: shorter delays become more frequent
     const biasedFraction = Math.random() ** 2;
     return minMs + biasedFraction * (maxMs - minMs);
   }
@@ -34,7 +33,7 @@
   }
 
   function shuffleArray(sourceArray) {
-    // Melange de Fisher-Yates sur une copie (l'original n'est pas modifie).
+    // Fisher-Yates shuffle on a copy (the source array is left untouched)
     const shuffled = [...sourceArray];
     for (let currentIndex = shuffled.length - 1; currentIndex > 0; currentIndex--) {
       const randomIndex = Math.floor(Math.random() * (currentIndex + 1));
@@ -49,20 +48,20 @@
   }
 
   async function participate(){
-    console.log("[IG-Auto] participate() appelee");
+    console.log("[IG-Auto] participate() called");
 
     const beforeClickDelayMs = getRandomDelayUniform(1500, 5000);
-    console.log("[IG-Auto] attente avant clic participer :", Math.round(beforeClickDelayMs), "ms");
+    console.log("[IG-Auto] waiting before participate click:", Math.round(beforeClickDelayMs), "ms");
     await delay(beforeClickDelayMs);
 
-    // Get the participate button element.
+    // Get the participate button element
     const participate = document.querySelector("button.button.validate");
-    // Click on participate if it exists.
+    // Click on participate if it exists
     if (participate !== null) {
       participate.click();
-      console.log("[IG-Auto] bouton trouve et clique");
+      console.log("[IG-Auto] participate button found and clicked");
     } else {
-      console.log("[IG-Auto] bouton ABSENT");
+      console.log("[IG-Auto] participate button NOT FOUND");
     }
     waitForSocialRewardsThenClick();
   }
@@ -71,20 +70,20 @@
     const socialRewardSelector = "a.button.reward";
     const maxWaitDurationMs = 10000;
 
-    // Cas 1 : les liens sociaux sont deja dans le DOM au moment de l'appel.
+    // Case 1: social links are already in the DOM
     if (document.querySelectorAll(socialRewardSelector).length > 0) {
-      console.log("[IG-Auto] liens sociaux deja presents, clic immediat");
+      console.log("[IG-Auto] social links already present, clicking now");
       socials();
       return;
     }
 
-    // Cas 2 : les liens ne sont pas encore la, on attend leur apparition.
+    // Case 2: links not present yet, wait for them to appear
     let safetyTimeoutId = null;
 
     const domObserver = new MutationObserver(() => {
       const socialRewardLinks = document.querySelectorAll(socialRewardSelector);
       if (socialRewardLinks.length > 0) {
-        console.log("[IG-Auto] liens sociaux detectes par l'observer :", socialRewardLinks.length);
+        console.log("[IG-Auto] social links detected by observer:", socialRewardLinks.length);
         domObserver.disconnect();
         clearTimeout(safetyTimeoutId);
         socials();
@@ -96,31 +95,31 @@
       subtree: true,
     });
 
-    // Filet de securite : si aucun lien n'apparait, on arrete d'observer.
+    // Safety net: stop observing if no link ever appears
     safetyTimeoutId = setTimeout(() => {
       domObserver.disconnect();
-      console.log("[IG-Auto] timeout de securite atteint, aucun lien social detecte");
+      console.log("[IG-Auto] safety timeout reached, no social link detected");
     }, maxWaitDurationMs);
   }
 
   async function socials(){
     const socialRewardLinks = document.querySelectorAll("a.button.reward");
-    console.log("[IG-Auto] socials() appelee, liens trouves :", socialRewardLinks.length);
+    console.log("[IG-Auto] socials() called, links found:", socialRewardLinks.length);
 
-    // Ordre de clic non deterministe.
+    // Click links in a non-deterministic order
     const linksInRandomOrder = shuffleArray(Array.from(socialRewardLinks));
 
     for (const socialLink of linksInRandomOrder) {
       const betweenClicksDelayMs = getRandomDelayBiasedShort(300, 1700);
-      console.log("[IG-Auto] attente avant prochain clic social :", Math.round(betweenClicksDelayMs), "ms");
+      console.log("[IG-Auto] waiting before next social click:", Math.round(betweenClicksDelayMs), "ms");
       await delay(betweenClicksDelayMs);
       socialLink.click();
     }
-    console.log("[IG-Auto] tous les liens sociaux ont ete cliques");
+    console.log("[IG-Auto] all social links have been clicked");
   }
 
   function giveawayList(){
-    // Open giveaway links from the new README layout, with fallback to legacy selectors.
+    // Open giveaway links from the new README layout, with fallback to legacy selectors
     getGiveawayLinks().forEach((a) => a.click())
   }
 
